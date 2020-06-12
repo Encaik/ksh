@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>Document</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        .main {
+            box-sizing: border-box;
+            display: flex;
+            justify-content: start;
+            align-items: center;
+            width: 0;
+            position: absolute;
+            top: 0;
+            margin: 20px 40px;
+            transition: all 1s ease;
+        }
+
+        .bar {
+            height: 30px;
+            width: calc(100% - 120px);
+        }
+        .text {
+            height: 30px;
+            width: 100px;
+            margin-right: 20px;
+            font-size: 25px;
+            text-align: right;
+            color: #000000;
+        }
+        .banner {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 100px;
+        }
+        .title {
+            font-size: 30px;
+            color: #2d2d2d;
+        }
+        .time {
+            font-size: 30px;
+            color: #6d6d6d;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="banner">
+            <div></div>
+            <div class="title">{{title}}</div>
+            <div class="time">{{nowtime}}</div>
+        </div>
+        <div class="main" :id="item" v-for="(item, index) in name" :key="index">
+            <div class="text">{{item}}</div>
+            <div class="bar" :style="{background:color[index]}"></div> 
+        </div>
+    </div>
+    <script>
+        var vm = new Vue({
+            el: "#app",
+            data() {
+                return {
+                    title: null,
+                    nowtime:null,
+                    name: [],
+                    time: [],
+                    color: [],
+                    maxwidth: document.body.clientWidth,
+                    width:0,
+                    data: []
+                }
+            },
+            created() {
+                this.getWidth();
+                this.getData();
+            },
+            methods: {
+                getWidth() {
+                    window.onresize = () => {
+                        return (() => {
+                            window.screenWidth = document.body.clientWidth
+                            this.screenWidth = window.screenWidth
+                        })()
+                    }
+                },
+                getData() {
+                    $.get("./data.csv", (res) => {
+                        let arr = res.split('\n')
+                        for (let index = 0; index < arr.length-1; index++) {
+                            if (index) {
+                                let time = arr[index].trim().split(',')[0]
+                                let data = arr[index].trim().split(',')   
+                                data.shift()
+                                this.time.push(time)
+                                this.data.push(data)
+                            } else {
+                                let title = arr[index].trim().split(',')[0]
+                                let name = arr[index].split(',')
+                                name.shift()
+                                this.title = title
+                                this.name = name
+                            }
+                        }
+                        for (let index = 0; index < this.name.length; index++) {
+                            let color = `rgb(${Math.round(Math.random()*155+100)},${Math.round(Math.random()*155+100)},${Math.round(Math.random()*155+100)})`
+                            this.color.push(color)
+                        }
+                    }).then(() => {
+                        this.showData();
+                    })
+                },
+                showData() {
+                    for (let index = 0; index < this.data.length; index++) {
+                        const timedata = this.data[index];
+                        const sortdata = [...timedata].sort((a,b)=>{return b-a})
+                        this.width = ( this.maxwidth - 250 ) / parseInt(sortdata[0])
+                        let set = new Set()
+                        for (let index = 0; index < this.name.length; index++) {
+                            set.add(index)
+                        }
+                        for (let indey = 0; indey < this.name.length; indey++) {
+                            let temp = sortdata.indexOf(timedata[indey])
+                            while (true) {
+                                if (set.has(temp)) {
+                                    set.delete(temp)
+                                    break
+                                } else {
+                                    temp += 1
+                                }
+                            }
+                            setTimeout(() => {
+                                this.nowtime = this.time[index];
+                                document.getElementById(this.name[indey]).style.width = `${parseInt(timedata[indey]) * this.width}px`
+                                document.getElementById(this.name[indey]).style.top = `${temp * 70 + 100}px`
+                            }, index * 1000);
+                        }
+                    }
+                }
+            },
+        })
+    </script>
+</body>
+
+</html>
