@@ -24,11 +24,16 @@
             top: 0;
             margin: 20px 40px;
             transition: all 1s ease;
+            filter: alpha(Opacity=0)
         }
 
         .bar {
             height: 30px;
             width: calc(100% - 120px);
+            text-align: right;
+            font-size: 1.5rem;
+            color: white;
+            padding: .1rem .5rem;
         }
         .text {
             height: 30px;
@@ -114,7 +119,7 @@
                             }
                         }
                         for (let index = 0; index < this.name.length; index++) {
-                            let color = `rgb(${Math.round(Math.random()*155+100)},${Math.round(Math.random()*155+100)},${Math.round(Math.random()*155+100)})`
+                            let color = `rgb(${Math.round(Math.random()*50+120)},${Math.round(Math.random()*50+120)},${Math.round(Math.random()*50+120)})`
                             this.color.push(color)
                         }
                     }).then(() => {
@@ -143,7 +148,14 @@
                             setTimeout(() => {
                                 this.nowtime = this.time[index];
                                 document.getElementById(this.name[indey]).style.width = `${parseInt(timedata[indey]) * this.width}px`
-                                document.getElementById(this.name[indey]).style.top = `${temp * 70 + 100}px`
+                                document.getElementById(this.name[indey]).childNodes[2].innerText = `${timedata[indey]}`
+                                if (temp > 10) {
+                                    document.getElementById(this.name[indey]).style.filter = `opacity(0)`
+                                    document.getElementById(this.name[indey]).style.top = `${temp * 70 + 200}px`
+                                } else {
+                                    document.getElementById(this.name[indey]).style.filter = `opacity(1)`
+                                    document.getElementById(this.name[indey]).style.top = `${temp * 70 + 100}px`
+                                }
                             }, index * 1000);
                         }
                     }
