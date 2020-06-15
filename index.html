@@ -12,6 +12,7 @@
         body {
             margin: 0;
             padding: 0;
+            overflow: hidden;
         }
 
         .main {
@@ -156,7 +157,7 @@
                                     document.getElementById(this.name[indey]).style.filter = `opacity(1)`
                                     document.getElementById(this.name[indey]).style.top = `${temp * 70 + 100}px`
                                 }
-                            }, index * 1000);
+                            }, (index + 0.01) * 1000);
                         }
                     }
                 }
